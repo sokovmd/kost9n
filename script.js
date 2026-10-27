@@ -3,7 +3,7 @@ let enabled=true,mode='run',until=0,kickTimer,stuntIndex=0;
 const runner={x:12,y:Math.max(70,innerHeight-170),vx:2.8,vy:-1.65};
 const stunts=[
   {kind:'tbank',pose:'shoot',company:true,text:'«Я решил уйти в Т‑Банк. Эврика, без обид.»'},
-  {kind:'punch',text:'«Секунду. Я грушу уроню — и Эврику кину.»'},
+  {kind:'punch',text:'«ПОЛУЧАЙ, ЭВРИКА! ЛЕВОЙ. ПРАВОЙ. И ЕЩЁ РАЗ ЛЕВОЙ!»'},
   {kind:'vk',pose:'punch',company:true,text:'«Я ухожу в VK. Синий мне к лицу.»'},
   {kind:'goal',text:'«Пас на Костяна. Удар. Эврика в воротах.»'},
   {kind:'yandex',pose:'rope',company:true,text:'«Решил уйти в Яндекс. Краски уже приехали.»'},
@@ -24,7 +24,9 @@ function hideSpeech(){speech.style.cssText='display:none'}
 function showSpeech(text){speech.textContent=text;speech.style.cssText='display:block;position:absolute;left:0;bottom:116px;width:min(220px,calc(100vw - 30px));z-index:5'}
 function boxingBag(){
   const rope=document.createElement('i'),bag=document.createElement('i');rope.style.cssText='position:absolute;left:161px;bottom:88px;width:3px;height:92px;background:#e9e5d8;transform-origin:bottom center';bag.style.cssText='position:absolute;left:130px;bottom:10px;width:64px;height:83px;border:4px solid #e9e5d8;border-radius:45% 45% 48% 48%;background:#e34135;box-shadow:inset 0 0 0 11px #7e241e;transform-origin:32px -88px';
-  stunt.style.cssText='display:block;position:absolute;inset:0;pointer-events:none';stunt.append(rope,bag);bag.animate([{transform:'rotate(0deg)'},{transform:'rotate(18deg)'},{transform:'rotate(-15deg)'},{transform:'rotate(12deg)'},{transform:'rotate(-9deg)'},{transform:'rotate(8deg)'}],{duration:3900,easing:'ease-in-out',fill:'forwards'});rope.animate([{transform:'rotate(0deg)'},{transform:'rotate(9deg)'},{transform:'rotate(-8deg)'},{transform:'rotate(6deg)'},{transform:'rotate(0deg)'}],{duration:3900,easing:'ease-in-out',fill:'forwards'});
+  mainPet.style.animation='boxing 1.2s steps(6) 3 forwards';stunt.style.cssText='display:block;position:absolute;inset:0;pointer-events:none';stunt.append(rope,bag);
+  bag.animate([{offset:0,transform:'rotate(0deg)'},{offset:.16,transform:'rotate(0deg)'},{offset:.21,transform:'rotate(24deg)'},{offset:.29,transform:'rotate(0deg)'},{offset:.37,transform:'rotate(-20deg)'},{offset:.46,transform:'rotate(0deg)'},{offset:.55,transform:'rotate(28deg)'},{offset:.63,transform:'rotate(5deg)'},{offset:.77,transform:'translate(82px,165px) rotate(118deg)',opacity:1},{offset:1,transform:'translate(105px,210px) rotate(145deg)',opacity:0}],{duration:5400,easing:'ease-in',fill:'forwards'});
+  rope.animate([{offset:0,transform:'rotate(0deg)',opacity:1},{offset:.21,transform:'rotate(8deg)',opacity:1},{offset:.37,transform:'rotate(-7deg)',opacity:1},{offset:.55,transform:'rotate(10deg)',opacity:1},{offset:.62,transform:'scaleY(1)',opacity:1},{offset:.68,transform:'translateY(35px) scaleY(.35) rotate(22deg)',opacity:0},{offset:1,opacity:0}],{duration:5400,easing:'ease-in',fill:'forwards'});
 }
 function footballGoal(){
   footballKick();const goal=document.createElement('i'),width=Math.min(240,Math.max(170,innerWidth-150)),height=Math.round(width*.66);goal.style.cssText=`position:absolute;left:104px;bottom:8px;width:${width}px;height:${height}px;border:7px solid #e9e5d8;border-left-width:4px;background:repeating-linear-gradient(45deg,transparent 0 13px,rgba(233,229,216,.42) 14px 16px);transform-origin:bottom left`;
@@ -54,8 +56,13 @@ function fitAction(){
   consolePet.style.left=`${runner.x}px`;consolePet.style.top=`${runner.y}px`;consolePet.style.right='auto';consolePet.style.bottom='auto';
 }
 function startRun(now=performance.now()){mode='run';until=now+1500+Math.random()*1500;hideSpeech();clearStunt();pose('run')}
+function nextStunt(){
+  if(stuntIndex===0){stuntIndex++;return stunts[0]}
+  if(stuntIndex===1){stuntIndex++;return stunts[1]}
+  stuntIndex++;return stunts[Math.floor(Math.random()*stunts.length)];
+}
 function pauseForStunt(now=performance.now(),forced){
-  mode='pause';const stuntData=forced||stunts[stuntIndex++%stunts.length];until=now+(stuntData.company?4700:4200);fitAction();showSpeech(stuntData.text);clearStunt();
+  mode='pause';const stuntData=forced||nextStunt();until=now+(stuntData.kind==='punch'?5800:stuntData.company?4700:4600);fitAction();showSpeech(stuntData.text);clearStunt();
   if(stuntData.kind==='goal')footballGoal();else pose(stuntData.pose||stuntData.kind);
   if(stuntData.kind==='punch')boxingBag();if(stuntData.kind==='shoot')shootTarget();if(stuntData.company){companyLook(stuntData.kind);brandFlash(stuntData.kind)}
 }
@@ -73,7 +80,7 @@ document.body.classList.add('lock');hideSpeech();clearStunt();pose('run');startR
 enter.onclick=()=>{modal.hidden=true;document.body.classList.remove('lock');startRun();};
 decline.onmouseenter=()=>{decline.style.transform=`translate(${(Math.random()>.5?1:-1)*(80+Math.random()*110)}px,${(Math.random()-.5)*70}px)`;pauseForStunt(performance.now(),{kind:'shoot',text:'«НЕПРАВИЛЬНЫЙ ОТВЕТ.»'})};
 decline.onclick=()=>{decline.textContent='НЕПРАВИЛЬНЫЙ ОТВЕТ';pauseForStunt(performance.now(),{kind:'shoot',text:'«Эврику я всё равно кину.»'})};
-document.querySelectorAll('.project').forEach(x=>{x.onmouseenter=()=>pauseForStunt(performance.now(),{kind:'punch',text:'«Проект держит нагрузку. Я держу курс на другую компанию.»'});x.onmouseleave=()=>startRun()});
+document.querySelectorAll('.project').forEach(x=>{x.onmouseenter=()=>pauseForStunt(performance.now(),{kind:'punch',text:'«ПОЛУЧАЙ, ЭВРИКА! ЛЕВОЙ. ПРАВОЙ. И ЕЩЁ РАЗ ЛЕВОЙ!»'});x.onmouseleave=()=>startRun()});
 document.querySelectorAll('a[href^="https://github.com"]').forEach(x=>x.onclick=()=>pauseForStunt(performance.now(),{kind:'rope',text:'«GitHub открыл. Теперь ищем другую компанию.»'}));
 addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-innerHeight,val=Math.max(8,100-Math.round(scrollY/Math.max(1,max)*78));bar.style.width=`${Math.min(100,scrollY/max*100)}%`;patience.textContent=`${val}%`;if(val<25&&enabled)pauseForStunt(performance.now(),{kind:'tbank',pose:'shoot',text:'«Время вышло. Ухожу в Т‑Банк.»'})},{passive:true});
 document.addEventListener('visibilitychange',()=>{document.title=document.hidden?'Я ВИЖУ, ЧТО ТЫ УШЁЛ':title;if(!document.hidden&&enabled)pauseForStunt(performance.now(),{kind:'goal',text:'«Вернулся? Мяч в сетке. Эврика — в прошлом.»'})});
