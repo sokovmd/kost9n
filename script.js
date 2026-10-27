@@ -13,18 +13,18 @@ function resetKick(){clearInterval(kickTimer);kickTimer=undefined;mainPet.style.
 function pose(kind='run'){
   resetKick();consolePet.className=`pet-console ${kind}`;mainPet.className='pet';mainPet.style.animation='';mainPet.style.backgroundPosition='';
   if(kind==='rope'){consolePet.className='pet-console';mainPet.style.backgroundPosition='0 -416px';mainPet.style.animation='rope .8s steps(5) infinite'}
-  if(kind==='idle')mainPet.classList.add('idle');mainPet.style.transform=runner.vx<0?'scaleX(-1) scale(1.62)':'scale(1.62)';
+  if(kind==='idle')mainPet.classList.add('idle');mainPet.style.transform=runner.vx<0?'scaleX(-1) scale(2.43)':'scale(2.43)';
 }
 function footballKick(){
-  resetKick();consolePet.className='pet-console';mainPet.className='pet';mainPet.style.width='108px';mainPet.style.height='144px';mainPet.style.backgroundImage="url('assets/kostyan-football-kick.png')";mainPet.style.backgroundSize='432px 144px';mainPet.style.backgroundPosition='0 0';mainPet.style.animation='';mainPet.style.transform='scale(1.25)';
+  resetKick();consolePet.className='pet-console';mainPet.className='pet';mainPet.style.width='108px';mainPet.style.height='144px';mainPet.style.backgroundImage="url('assets/kostyan-football-kick.png?v=bc4f981')";mainPet.style.backgroundSize='432px 144px';mainPet.style.backgroundPosition='0 0';mainPet.style.animation='';mainPet.style.transform='scale(1.875)';
   let frame=0;kickTimer=setInterval(()=>{frame=(frame+1)%4;mainPet.style.backgroundPosition=`-${frame*108}px 0`},240);
 }
 function clearStunt(){clearInterval(kickTimer);kickTimer=undefined;stunt.replaceChildren();stunt.style.cssText='display:none'}
 function hideSpeech(){speech.style.cssText='display:none'}
-function showSpeech(text){speech.textContent=text;speech.style.cssText='display:block;position:absolute;left:0;bottom:116px;width:min(220px,calc(100vw - 30px));z-index:5'}
+function showSpeech(text){speech.textContent=text;speech.style.cssText='display:block;position:absolute;left:0;bottom:175px;width:min(220px,calc(100vw - 30px));z-index:5'}
 function boxingBag(){
-  resetKick();consolePet.className='pet-console';mainPet.className='pet';const size=Math.min(290,innerWidth-24);
-  mainPet.style.width=`${size}px`;mainPet.style.height=`${size}px`;mainPet.style.backgroundImage="url('assets/kostyan-heavybag-v3.png')";mainPet.style.backgroundSize=`${size*3}px ${size*2}px`;mainPet.style.animation='';mainPet.style.transform='none';speech.style.bottom=`${size-18}px`;
+  resetKick();consolePet.className='pet-console';mainPet.className='pet';const size=Math.min(435,innerWidth-24);
+  mainPet.style.width=`${size}px`;mainPet.style.height=`${size}px`;mainPet.style.backgroundImage="url('assets/kostyan-heavybag-v3.png?v=28c68a7')";mainPet.style.backgroundSize=`${size*3}px ${size*2}px`;mainPet.style.animation='';mainPet.style.transform='none';speech.style.bottom=`${size-18}px`;
   const frames=[{x:0,y:0,ms:800},{x:1,y:0,ms:600},{x:2,y:0,ms:700},{x:0,y:1,ms:600},{x:1,y:1,ms:700},{x:2,y:1,ms:2050}];let frame=0;
   const play=()=>{const current=frames[frame];mainPet.style.backgroundPosition=`-${current.x*size}px -${current.y*size}px`;if(frame<frames.length-1){frame++;kickTimer=setTimeout(play,current.ms)}};play();
 }
@@ -52,7 +52,7 @@ function companyLook(kind){
   stunt.style.cssText='display:block;position:absolute;inset:0;pointer-events:none';stunt.append(mark);mark.animate([{transform:'scale(.35) rotate(-20deg)',opacity:0},{transform:'scale(1.08) rotate(6deg)',opacity:1},{transform:'scale(1) rotate(-8deg)',opacity:1}],{duration:650,fill:'forwards'});
 }
 function fitAction(){
-  runner.x=Math.min(Math.max(8,runner.x),Math.max(8,innerWidth-360));runner.y=Math.min(Math.max(65,runner.y),Math.max(65,innerHeight-250));
+  runner.x=Math.min(Math.max(8,runner.x),Math.max(8,innerWidth-520));runner.y=Math.min(Math.max(65,runner.y),Math.max(65,innerHeight-460));
   consolePet.style.left=`${runner.x}px`;consolePet.style.top=`${runner.y}px`;consolePet.style.right='auto';consolePet.style.bottom='auto';
 }
 function startRun(now=performance.now()){mode='run';until=now+1500+Math.random()*1500;hideSpeech();clearStunt();pose('run')}
@@ -69,7 +69,7 @@ function pauseForStunt(now=performance.now(),forced){
 function animatePet(now){
   if(enabled&&modal.hidden){
     if(mode==='run'){
-      const maxX=Math.max(8,innerWidth-consolePet.offsetWidth-8),maxY=Math.max(65,innerHeight-consolePet.offsetHeight-8);runner.x+=runner.vx;runner.y+=runner.vy;
+      const maxX=Math.max(8,innerWidth-245),maxY=Math.max(65,innerHeight-250);runner.x+=runner.vx;runner.y+=runner.vy;
       if(runner.x<=8||runner.x>=maxX){runner.vx*=-1;runner.x=Math.max(8,Math.min(maxX,runner.x));pose('run')}
       if(runner.y<=65||runner.y>=maxY){runner.vy*=-1;runner.y=Math.max(65,Math.min(maxY,runner.y));}
       consolePet.style.left=`${runner.x}px`;consolePet.style.top=`${runner.y}px`;consolePet.style.right='auto';consolePet.style.bottom='auto';if(now>=until)pauseForStunt(now);
