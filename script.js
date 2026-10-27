@@ -23,10 +23,10 @@ function clearStunt(){clearInterval(kickTimer);kickTimer=undefined;stunt.replace
 function hideSpeech(){speech.style.cssText='display:none'}
 function showSpeech(text){speech.textContent=text;speech.style.cssText='display:block;position:absolute;left:0;bottom:116px;width:min(220px,calc(100vw - 30px));z-index:5'}
 function boxingBag(){
-  const rope=document.createElement('i'),bag=document.createElement('i');rope.style.cssText='position:absolute;left:161px;bottom:88px;width:3px;height:92px;background:#e9e5d8;transform-origin:bottom center';bag.style.cssText='position:absolute;left:130px;bottom:10px;width:64px;height:83px;border:4px solid #e9e5d8;border-radius:45% 45% 48% 48%;background:#e34135;box-shadow:inset 0 0 0 11px #7e241e;transform-origin:32px -88px';
-  mainPet.style.animation='boxing 1.2s steps(6) 3 forwards';stunt.style.cssText='display:block;position:absolute;inset:0;pointer-events:none';stunt.append(rope,bag);
-  bag.animate([{offset:0,transform:'rotate(0deg)'},{offset:.16,transform:'rotate(0deg)'},{offset:.21,transform:'rotate(24deg)'},{offset:.29,transform:'rotate(0deg)'},{offset:.37,transform:'rotate(-20deg)'},{offset:.46,transform:'rotate(0deg)'},{offset:.55,transform:'rotate(28deg)'},{offset:.63,transform:'rotate(5deg)'},{offset:.77,transform:'translate(82px,165px) rotate(118deg)',opacity:1},{offset:1,transform:'translate(105px,210px) rotate(145deg)',opacity:0}],{duration:5400,easing:'ease-in',fill:'forwards'});
-  rope.animate([{offset:0,transform:'rotate(0deg)',opacity:1},{offset:.21,transform:'rotate(8deg)',opacity:1},{offset:.37,transform:'rotate(-7deg)',opacity:1},{offset:.55,transform:'rotate(10deg)',opacity:1},{offset:.62,transform:'scaleY(1)',opacity:1},{offset:.68,transform:'translateY(35px) scaleY(.35) rotate(22deg)',opacity:0},{offset:1,opacity:0}],{duration:5400,easing:'ease-in',fill:'forwards'});
+  resetKick();consolePet.className='pet-console';mainPet.className='pet';const size=Math.min(290,innerWidth-24);
+  mainPet.style.width=`${size}px`;mainPet.style.height=`${size}px`;mainPet.style.backgroundImage="url('assets/kostyan-heavybag-v3.png')";mainPet.style.backgroundSize=`${size*3}px ${size*2}px`;mainPet.style.animation='';mainPet.style.transform='none';speech.style.bottom=`${size-18}px`;
+  const frames=[{x:0,y:0,ms:800},{x:1,y:0,ms:600},{x:2,y:0,ms:700},{x:0,y:1,ms:600},{x:1,y:1,ms:700},{x:2,y:1,ms:2050}];let frame=0;
+  const play=()=>{const current=frames[frame];mainPet.style.backgroundPosition=`-${current.x*size}px -${current.y*size}px`;if(frame<frames.length-1){frame++;kickTimer=setTimeout(play,current.ms)}};play();
 }
 function footballGoal(){
   footballKick();const goal=document.createElement('i'),width=Math.min(240,Math.max(170,innerWidth-150)),height=Math.round(width*.66);goal.style.cssText=`position:absolute;left:104px;bottom:8px;width:${width}px;height:${height}px;border:7px solid #e9e5d8;border-left-width:4px;background:repeating-linear-gradient(45deg,transparent 0 13px,rgba(233,229,216,.42) 14px 16px);transform-origin:bottom left`;
@@ -63,8 +63,8 @@ function nextStunt(){
 }
 function pauseForStunt(now=performance.now(),forced){
   mode='pause';const stuntData=forced||nextStunt();until=now+(stuntData.kind==='punch'?5800:stuntData.company?4700:4600);fitAction();showSpeech(stuntData.text);clearStunt();
-  if(stuntData.kind==='goal')footballGoal();else pose(stuntData.pose||stuntData.kind);
-  if(stuntData.kind==='punch')boxingBag();if(stuntData.kind==='shoot')shootTarget();if(stuntData.company){companyLook(stuntData.kind);brandFlash(stuntData.kind)}
+  if(stuntData.kind==='goal')footballGoal();else if(stuntData.kind==='punch')boxingBag();else pose(stuntData.pose||stuntData.kind);
+  if(stuntData.kind==='shoot')shootTarget();if(stuntData.company){companyLook(stuntData.kind);brandFlash(stuntData.kind)}
 }
 function animatePet(now){
   if(enabled&&modal.hidden){
