@@ -23,10 +23,11 @@ function clearStunt(){clearInterval(kickTimer);kickTimer=undefined;document.quer
 function hideSpeech(){speech.style.cssText='display:none'}
 function showSpeech(text){speech.textContent=text;speech.style.cssText='display:block;position:absolute;left:0;bottom:175px;width:min(220px,calc(100vw - 30px));z-index:5'}
 function boxingBag(){
-  resetKick();consolePet.className='pet-console';mainPet.className='pet';mainPet.style.visibility='hidden';const size=Math.floor(Math.min(520,innerWidth*.92,innerHeight*.65));
-  const scene=document.createElement('div');scene.id='boxingScene';scene.setAttribute('aria-label','Костян бьёт подвесную грушу');scene.style.cssText=`position:fixed;left:50%;top:52%;z-index:32;width:${size}px;height:${size}px;transform:translate(-50%,-50%);pointer-events:none;background:url('assets/kostyan-heavybag-v3.png?v=boxing-scene-3') no-repeat;background-size:${size*3}px ${size*2}px;background-position:0 0`;document.body.append(scene);
-  speech.style.cssText=`display:block;position:fixed;left:50%;top:${Math.max(72,(innerHeight-size)/2-64)}px;bottom:auto;width:min(300px,calc(100vw - 30px));transform:translateX(-50%);z-index:35`;
-  const frames=[{x:0,y:0,ms:800},{x:1,y:0,ms:600},{x:2,y:0,ms:700},{x:0,y:1,ms:600},{x:1,y:1,ms:700},{x:2,y:1,ms:2050}];let frame=0;
+  resetKick();consolePet.className='pet-console';mainPet.className='pet';mainPet.style.visibility='hidden';const size=Math.floor(Math.min(430,innerWidth*.9,innerHeight*.58));
+  const left=Math.max(8,Math.min(innerWidth-size-8,runner.x-size*.12)),top=Math.max(68,Math.min(innerHeight-size-8,runner.y-size*.28));
+  const scene=document.createElement('div');scene.id='boxingScene';scene.setAttribute('aria-label','Костян бьёт грушу Эврики');scene.style.cssText=`position:fixed;left:${left}px;top:${top}px;z-index:32;width:${size}px;height:${size}px;pointer-events:none;background:url('assets/kostyan-heavybag-evrika-v4.png?v=evrika-bag-4') no-repeat;background-size:${size*3}px ${size*2}px;background-position:0 0`;document.body.append(scene);
+  speech.style.cssText=`display:block;position:fixed;left:${Math.max(15,Math.min(innerWidth-315,left+size*.5-150))}px;top:${Math.max(66,top-60)}px;bottom:auto;width:min(300px,calc(100vw - 30px));z-index:35`;
+  const frames=[{x:0,y:0,ms:350},{x:1,y:0,ms:260},{x:2,y:0,ms:320},{x:0,y:1,ms:260},{x:1,y:1,ms:320},{x:2,y:1,ms:900}];let frame=0;
   const play=()=>{const current=frames[frame];scene.style.backgroundPosition=`-${current.x*size}px -${current.y*size}px`;if(frame<frames.length-1){frame++;kickTimer=setTimeout(play,current.ms)}};play();
 }
 function footballGoal(){
@@ -66,7 +67,7 @@ function nextStunt(){
   stuntIndex++;return stunts[Math.floor(Math.random()*stunts.length)];
 }
 function pauseForStunt(now=performance.now(),forced){
-  mode='pause';const stuntData=forced||nextStunt();until=now+(stuntData.kind==='punch'?5800:stuntData.company?4700:4600);fitAction();showSpeech(stuntData.text);clearStunt();
+  mode='pause';const stuntData=forced||nextStunt();until=now+(stuntData.kind==='punch'?3000:stuntData.company?4700:4600);fitAction();showSpeech(stuntData.text);clearStunt();
   if(stuntData.kind==='goal')footballGoal();else if(stuntData.kind==='punch')boxingBag();else pose(stuntData.pose||stuntData.kind);
   if(stuntData.kind==='shoot')shootTarget();if(stuntData.company){companyLook(stuntData.kind);brandFlash(stuntData.kind)}
 }
