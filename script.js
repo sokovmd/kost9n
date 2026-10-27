@@ -1,5 +1,5 @@
 const modal=document.querySelector('#modal'),enter=document.querySelector('#enter'),decline=document.querySelector('#decline'),speech=document.querySelector('#speech'),stunt=document.querySelector('#stunt'),consolePet=document.querySelector('.pet-console'),mainPet=document.querySelector('#mainPet'),patience=document.querySelector('#patience'),motion=document.querySelector('#motion'),bar=document.querySelector('.progress span'),title=document.title;
-let enabled=true,mode='run',until=0,kickTimer,stuntIndex=0,lastFrame=performance.now(),bottomWarningShown=false;
+let enabled=true,mode='run',until=0,kickTimer,lastFrame=performance.now(),bottomWarningShown=false;
 const runner={x:12,y:Math.max(70,innerHeight-270),vx:125,vy:-78};
 const stunts=[
   {kind:'tbank',pose:'shoot',company:true,text:'«Т-Банк лучшая компания в мире.»'},
@@ -9,6 +9,10 @@ const stunts=[
   {kind:'yandex',pose:'rope',company:true,text:'«Я решил уйти в Яндекс. Я не боюсь Дронов.»'},
   {kind:'rope',text:'«Прыгаю на скакалке, пока ищу другую компанию.»'}
 ];
+function shuffled(items){
+  const result=[...items];for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]]}return result;
+}
+const openingDeck=shuffled(stunts);let lastStuntKind='';
 function resetKick(){clearInterval(kickTimer);kickTimer=undefined;document.querySelector('#boxingScene')?.remove();mainPet.style.visibility='';mainPet.style.width='';mainPet.style.height='';mainPet.style.backgroundImage='';mainPet.style.backgroundSize='';mainPet.style.filter='';}
 function pose(kind='run'){
   resetKick();consolePet.className=`pet-console ${kind}`;mainPet.className='pet';mainPet.style.animation='';mainPet.style.backgroundPosition='';
@@ -62,12 +66,13 @@ function fitAction(){
 }
 function startRun(now=performance.now()){mode='run';until=now+1500+Math.random()*1500;lastFrame=now;hideSpeech();clearStunt();pose('run')}
 function nextStunt(){
-  if(stuntIndex===0){stuntIndex++;return stunts[0]}
-  if(stuntIndex===1){stuntIndex++;return stunts[1]}
-  stuntIndex++;const pool=Math.random()<1/3?stunts.filter(item=>item.company):stunts.filter(item=>!item.company);return pool[Math.floor(Math.random()*pool.length)];
+  let selected;
+  if(openingDeck.length)selected=openingDeck.shift();
+  else{let pool=Math.random()<1/3?stunts.filter(item=>item.company):stunts.filter(item=>!item.company);const withoutRepeat=pool.filter(item=>item.kind!==lastStuntKind);if(withoutRepeat.length)pool=withoutRepeat;selected=pool[Math.floor(Math.random()*pool.length)]}
+  lastStuntKind=selected.kind;return selected;
 }
 function pauseForStunt(now=performance.now(),forced){
-  mode='pause';const stuntData=forced||nextStunt();until=now+(stuntData.kind==='punch'?3000:stuntData.company?7050:4600);fitAction();showSpeech(stuntData.text);clearStunt();
+  mode='pause';const stuntData=forced||nextStunt();if(forced){const deckIndex=openingDeck.findIndex(item=>item.kind===stuntData.kind);if(deckIndex>=0)openingDeck.splice(deckIndex,1);lastStuntKind=stuntData.kind}until=now+(stuntData.kind==='punch'?3000:stuntData.company?7050:4600);fitAction();showSpeech(stuntData.text);clearStunt();
   if(stuntData.kind==='goal')footballGoal();else if(stuntData.kind==='punch')boxingBag();else pose(stuntData.pose||stuntData.kind);
   if(stuntData.kind==='shoot')shootTarget();if(stuntData.company){companyLook(stuntData.kind);brandFlash(stuntData.kind)}
 }
