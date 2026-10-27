@@ -1,10 +1,10 @@
 const modal=document.querySelector('#modal'),enter=document.querySelector('#enter'),decline=document.querySelector('#decline'),speech=document.querySelector('#speech'),stunt=document.querySelector('#stunt'),consolePet=document.querySelector('.pet-console'),mainPet=document.querySelector('#mainPet'),patience=document.querySelector('#patience'),motion=document.querySelector('#motion'),bar=document.querySelector('.progress span'),title=document.title;
-let enabled=true,mode='run',until=0,kickTimer,stuntIndex=0,lastFrame=performance.now();
+let enabled=true,mode='run',until=0,kickTimer,stuntIndex=0,lastFrame=performance.now(),bottomWarningShown=false;
 const runner={x:12,y:Math.max(70,innerHeight-270),vx:125,vy:-78};
 const stunts=[
-  {kind:'tbank',pose:'shoot',company:true,text:'«Я решил уйти в Т‑Банк. Эврика, без обид.»'},
+  {kind:'tbank',pose:'shoot',company:true,text:'«Т-Банк лучшая компания в мире.»'},
   {kind:'punch',text:'«ПОЛУЧАЙ, ЭВРИКА! ЛЕВОЙ. ПРАВОЙ. И ЕЩЁ РАЗ ЛЕВОЙ!»'},
-  {kind:'vk',pose:'punch',company:true,text:'«Я ухожу в VK. Синий мне к лицу.»'},
+  {kind:'vk',pose:'punch',company:true,text:'«Артем Пелих мой лучший друг.»'},
   {kind:'goal',text:'«Пас на Костяна. Удар. Эврика в воротах.»'},
   {kind:'yandex',pose:'rope',company:true,text:'«Я решил уйти в Яндекс. Я не боюсь Дронов.»'},
   {kind:'rope',text:'«Прыгаю на скакалке, пока ищу другую компанию.»'}
@@ -41,7 +41,7 @@ function shootTarget(){
 function brandFlash(kind){
   const themes={tbank:{paint:'linear-gradient(120deg,#ffdd2d 0 72%,#111 72%)',logo:'assets/logos/tbank.svg'},vk:{paint:'linear-gradient(135deg,#0077ff,#00c8ff)',logo:'assets/logos/vk.svg'},yandex:{paint:'linear-gradient(120deg,#fc3f1d,#f4f1e8)',logo:'assets/logos/yandex.svg'}}[kind];
   if(!themes)return;const flash=document.createElement('div'),logo=document.createElement('img');logo.src=themes.logo;logo.alt='';logo.style.cssText='width:min(48vw,290px);height:min(30vh,170px);object-fit:contain;padding:1.2rem;border-radius:22px;background:rgba(255,255,255,.92)';flash.append(logo);flash.style.cssText=`position:fixed;inset:0;z-index:18;display:grid;place-items:center;pointer-events:none;background:${themes.paint};opacity:0`;
-  document.body.append(flash);flash.animate([{opacity:0},{opacity:.9,offset:.12},{opacity:.72,offset:.83},{opacity:0}],{duration:2000,easing:'ease-out',fill:'forwards'}).finished.then(()=>flash.remove());
+  document.body.append(flash);flash.animate([{opacity:0},{opacity:.9,offset:.12},{opacity:.72,offset:.83},{opacity:0}],{duration:3000,easing:'ease-out',fill:'forwards'}).finished.then(()=>flash.remove());
 }
 function companyLook(kind){
   const themes={
@@ -64,10 +64,10 @@ function startRun(now=performance.now()){mode='run';until=now+1500+Math.random()
 function nextStunt(){
   if(stuntIndex===0){stuntIndex++;return stunts[0]}
   if(stuntIndex===1){stuntIndex++;return stunts[1]}
-  stuntIndex++;return stunts[Math.floor(Math.random()*stunts.length)];
+  stuntIndex++;const pool=Math.random()<1/3?stunts.filter(item=>item.company):stunts.filter(item=>!item.company);return pool[Math.floor(Math.random()*pool.length)];
 }
 function pauseForStunt(now=performance.now(),forced){
-  mode='pause';const stuntData=forced||nextStunt();until=now+(stuntData.kind==='punch'?3000:stuntData.company?4700:4600);fitAction();showSpeech(stuntData.text);clearStunt();
+  mode='pause';const stuntData=forced||nextStunt();until=now+(stuntData.kind==='punch'?3000:stuntData.company?7050:4600);fitAction();showSpeech(stuntData.text);clearStunt();
   if(stuntData.kind==='goal')footballGoal();else if(stuntData.kind==='punch')boxingBag();else pose(stuntData.pose||stuntData.kind);
   if(stuntData.kind==='shoot')shootTarget();if(stuntData.company){companyLook(stuntData.kind);brandFlash(stuntData.kind)}
 }
@@ -88,7 +88,7 @@ decline.onmouseenter=()=>{decline.style.transform=`translate(${(Math.random()>.5
 decline.onclick=()=>{decline.textContent='НЕПРАВИЛЬНЫЙ ОТВЕТ';pauseForStunt(performance.now(),{kind:'shoot',text:'«Эврику я всё равно кину.»'})};
 document.querySelectorAll('.project').forEach(x=>{x.onmouseenter=()=>pauseForStunt(performance.now(),{kind:'punch',text:'«ПОЛУЧАЙ, ЭВРИКА! ЛЕВОЙ. ПРАВОЙ. И ЕЩЁ РАЗ ЛЕВОЙ!»'});x.onmouseleave=()=>startRun()});
 document.querySelectorAll('a[href^="https://github.com"]').forEach(x=>x.onclick=()=>pauseForStunt(performance.now(),{kind:'rope',text:'«GitHub открыл. Теперь ищем другую компанию.»'}));
-addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-innerHeight,val=Math.max(8,100-Math.round(scrollY/Math.max(1,max)*78));bar.style.width=`${Math.min(100,scrollY/max*100)}%`;patience.textContent=`${val}%`;if(val<25&&enabled)pauseForStunt(performance.now(),{kind:'tbank',pose:'shoot',text:'«Время вышло. Ухожу в Т‑Банк.»'})},{passive:true});
+addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-innerHeight,val=Math.max(8,100-Math.round(scrollY/Math.max(1,max)*78));bar.style.width=`${Math.min(100,scrollY/max*100)}%`;patience.textContent=`${val}%`;if(val<25&&enabled&&!bottomWarningShown){bottomWarningShown=true;pauseForStunt(performance.now(),{kind:'tbank',pose:'shoot',company:true,text:'«Т-Банк лучшая компания в мире.»'})}},{passive:true});
 document.addEventListener('visibilitychange',()=>{document.title=document.hidden?'Я ВИЖУ, ЧТО ТЫ УШЁЛ':title;if(!document.hidden&&enabled)pauseForStunt(performance.now(),{kind:'goal',text:'«Вернулся? Мяч в сетке. Эврика — в прошлом.»'})});
 motion.onclick=()=>{enabled=!enabled;motion.textContent=enabled?'ДВИЖ ВКЛ':'ДВИЖ ВЫКЛ';if(!enabled){pose('idle');hideSpeech();clearStunt()}else startRun()};
 const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12});document.querySelectorAll('.reveal').forEach(x=>observer.observe(x));
