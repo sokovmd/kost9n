@@ -2,11 +2,11 @@ const modal=document.querySelector('#modal'),enter=document.querySelector('#ente
 let enabled=true,mode='run',until=0,kickTimer,lastFrame=performance.now(),bottomWarningShown=false;
 const runner={x:12,y:Math.max(70,innerHeight-270),vx:125,vy:-78};
 const stunts=[
-  {kind:'tbank',pose:'shoot',company:true,text:'«Т-Банк лучшая компания в мире.»'},
+  {kind:'tbank',pose:'shoot',company:true,text:'«Ухожу в Т-Банк. Т-Банк лучшая компания в мире.»'},
   {kind:'punch',text:'«ПОЛУЧАЙ, ЭВРИКА! ЛЕВОЙ. ПРАВОЙ. И ЕЩЁ РАЗ ЛЕВОЙ!»'},
-  {kind:'vk',pose:'punch',company:true,text:'«Артем Пелих мой лучший друг.»'},
+  {kind:'vk',pose:'punch',company:true,text:'«Ухожу в VK. Артем Пелих мой лучший друг.»'},
   {kind:'goal',text:'«Пас на Костяна. Удар. Эврика в воротах.»'},
-  {kind:'yandex',pose:'rope',company:true,text:'«Я решил уйти в Яндекс. Я не боюсь Дронов.»'},
+  {kind:'yandex',pose:'rope',company:true,text:'«Ухожу в Яндекс. Я не боюсь Дронов.»'},
   {kind:'rope',text:'«Прыгаю на скакалке, пока ищу другую компанию.»'}
 ];
 function shuffled(items){
@@ -93,7 +93,7 @@ decline.onmouseenter=()=>{decline.style.transform=`translate(${(Math.random()>.5
 decline.onclick=()=>{decline.textContent='НЕПРАВИЛЬНЫЙ ОТВЕТ';pauseForStunt(performance.now(),{kind:'shoot',text:'«Эврику я всё равно кину.»'})};
 document.querySelectorAll('.project').forEach(x=>{x.onmouseenter=()=>pauseForStunt(performance.now(),{kind:'punch',text:'«ПОЛУЧАЙ, ЭВРИКА! ЛЕВОЙ. ПРАВОЙ. И ЕЩЁ РАЗ ЛЕВОЙ!»'});x.onmouseleave=()=>startRun()});
 document.querySelectorAll('a[href^="https://github.com"]').forEach(x=>x.onclick=()=>pauseForStunt(performance.now(),{kind:'rope',text:'«GitHub открыл. Теперь ищем другую компанию.»'}));
-addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-innerHeight,val=Math.max(8,100-Math.round(scrollY/Math.max(1,max)*78));bar.style.width=`${Math.min(100,scrollY/max*100)}%`;patience.textContent=`${val}%`;if(val<25&&enabled&&!bottomWarningShown){bottomWarningShown=true;pauseForStunt(performance.now(),{kind:'tbank',pose:'shoot',company:true,text:'«Т-Банк лучшая компания в мире.»'})}},{passive:true});
+addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-innerHeight,val=Math.max(8,100-Math.round(scrollY/Math.max(1,max)*78));bar.style.width=`${Math.min(100,scrollY/max*100)}%`;patience.textContent=`${val}%`;if(val<25&&enabled&&!bottomWarningShown){bottomWarningShown=true;pauseForStunt(performance.now(),{kind:'tbank',pose:'shoot',company:true,text:'«Ухожу в Т-Банк. Т-Банк лучшая компания в мире.»'})}},{passive:true});
 document.addEventListener('visibilitychange',()=>{document.title=document.hidden?'Я ВИЖУ, ЧТО ТЫ УШЁЛ':title;if(!document.hidden&&enabled)pauseForStunt(performance.now(),{kind:'goal',text:'«Вернулся? Мяч в сетке. Эврика — в прошлом.»'})});
 motion.onclick=()=>{enabled=!enabled;motion.textContent=enabled?'ДВИЖ ВКЛ':'ДВИЖ ВЫКЛ';if(!enabled){pose('idle');hideSpeech();clearStunt()}else startRun()};
 const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12});document.querySelectorAll('.reveal').forEach(x=>observer.observe(x));
