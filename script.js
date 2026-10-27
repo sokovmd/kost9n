@@ -1,6 +1,6 @@
 const modal=document.querySelector('#modal'),enter=document.querySelector('#enter'),decline=document.querySelector('#decline'),speech=document.querySelector('#speech'),stunt=document.querySelector('#stunt'),consolePet=document.querySelector('.pet-console'),mainPet=document.querySelector('#mainPet'),patience=document.querySelector('#patience'),motion=document.querySelector('#motion'),bar=document.querySelector('.progress span'),title=document.title;
-let enabled=true,mode='run',until=0,kickTimer,stuntIndex=0;
-const runner={x:12,y:Math.max(70,innerHeight-170),vx:2.8,vy:-1.65};
+let enabled=true,mode='run',until=0,kickTimer,stuntIndex=0,lastFrame=performance.now();
+const runner={x:12,y:Math.max(70,innerHeight-270),vx:125,vy:-78};
 const stunts=[
   {kind:'tbank',pose:'shoot',company:true,text:'«Я решил уйти в Т‑Банк. Эврика, без обид.»'},
   {kind:'punch',text:'«ПОЛУЧАЙ, ЭВРИКА! ЛЕВОЙ. ПРАВОЙ. И ЕЩЁ РАЗ ЛЕВОЙ!»'},
@@ -24,7 +24,7 @@ function hideSpeech(){speech.style.cssText='display:none'}
 function showSpeech(text){speech.textContent=text;speech.style.cssText='display:block;position:absolute;left:0;bottom:175px;width:min(220px,calc(100vw - 30px));z-index:5'}
 function boxingBag(){
   resetKick();consolePet.className='pet-console';mainPet.className='pet';mainPet.style.visibility='hidden';const size=Math.floor(Math.min(520,innerWidth*.92,innerHeight*.65));
-  const scene=document.createElement('div');scene.id='boxingScene';scene.setAttribute('aria-label','Костян бьёт подвесную грушу');scene.style.cssText=`position:fixed;left:50%;top:52%;z-index:32;width:${size}px;height:${size}px;transform:translate(-50%,-50%);pointer-events:none;background:url('assets/kostyan-heavybag-v3.png?v=boxing-scene-2') no-repeat;background-size:${size*3}px ${size*2}px;background-position:0 0`;document.body.append(scene);
+  const scene=document.createElement('div');scene.id='boxingScene';scene.setAttribute('aria-label','Костян бьёт подвесную грушу');scene.style.cssText=`position:fixed;left:50%;top:52%;z-index:32;width:${size}px;height:${size}px;transform:translate(-50%,-50%);pointer-events:none;background:url('assets/kostyan-heavybag-v3.png?v=boxing-scene-3') no-repeat;background-size:${size*3}px ${size*2}px;background-position:0 0`;document.body.append(scene);
   speech.style.cssText=`display:block;position:fixed;left:50%;top:${Math.max(72,(innerHeight-size)/2-64)}px;bottom:auto;width:min(300px,calc(100vw - 30px));transform:translateX(-50%);z-index:35`;
   const frames=[{x:0,y:0,ms:800},{x:1,y:0,ms:600},{x:2,y:0,ms:700},{x:0,y:1,ms:600},{x:1,y:1,ms:700},{x:2,y:1,ms:2050}];let frame=0;
   const play=()=>{const current=frames[frame];scene.style.backgroundPosition=`-${current.x*size}px -${current.y*size}px`;if(frame<frames.length-1){frame++;kickTimer=setTimeout(play,current.ms)}};play();
@@ -52,11 +52,14 @@ function companyLook(kind){
   const mark=document.createElement('img');mark.src=themes.logo;mark.alt='Логотип компании';mark.style.cssText=`position:absolute;left:105px;bottom:20px;z-index:4;width:${kind==='tbank'?'150px':'82px'};height:82px;object-fit:contain;padding:10px;border-radius:14px;background:${themes.bg};box-shadow:5px 5px 0 rgba(17,18,15,.6)`;
   stunt.style.cssText='display:block;position:absolute;inset:0;pointer-events:none';stunt.append(mark);mark.animate([{transform:'scale(.35) rotate(-20deg)',opacity:0},{transform:'scale(1.08) rotate(6deg)',opacity:1},{transform:'scale(1) rotate(-5deg)',opacity:1}],{duration:650,fill:'forwards'});
 }
+function placeRunner(){
+  consolePet.style.left='0';consolePet.style.top='0';consolePet.style.right='auto';consolePet.style.bottom='auto';consolePet.style.willChange='transform';consolePet.style.transform=`translate3d(${Math.round(runner.x)}px,${Math.round(runner.y)}px,0)`;
+}
 function fitAction(){
   runner.x=Math.min(Math.max(8,runner.x),Math.max(8,innerWidth-520));runner.y=Math.min(Math.max(65,runner.y),Math.max(65,innerHeight-460));
-  consolePet.style.left=`${runner.x}px`;consolePet.style.top=`${runner.y}px`;consolePet.style.right='auto';consolePet.style.bottom='auto';
+  placeRunner();
 }
-function startRun(now=performance.now()){mode='run';until=now+1500+Math.random()*1500;hideSpeech();clearStunt();pose('run')}
+function startRun(now=performance.now()){mode='run';until=now+1500+Math.random()*1500;lastFrame=now;hideSpeech();clearStunt();pose('run')}
 function nextStunt(){
   if(stuntIndex===0){stuntIndex++;return stunts[0]}
   if(stuntIndex===1){stuntIndex++;return stunts[1]}
@@ -68,12 +71,13 @@ function pauseForStunt(now=performance.now(),forced){
   if(stuntData.kind==='shoot')shootTarget();if(stuntData.company){companyLook(stuntData.kind);brandFlash(stuntData.kind)}
 }
 function animatePet(now){
+  const dt=Math.min(.04,Math.max(0,(now-lastFrame)/1000));lastFrame=now;
   if(enabled&&modal.hidden){
     if(mode==='run'){
-      const maxX=Math.max(8,innerWidth-245),maxY=Math.max(65,innerHeight-250);runner.x+=runner.vx;runner.y+=runner.vy;
+      const maxX=Math.max(8,innerWidth-245),maxY=Math.max(65,innerHeight-250);runner.x+=runner.vx*dt;runner.y+=runner.vy*dt;
       if(runner.x<=8||runner.x>=maxX){runner.vx*=-1;runner.x=Math.max(8,Math.min(maxX,runner.x));pose('run')}
       if(runner.y<=65||runner.y>=maxY){runner.vy*=-1;runner.y=Math.max(65,Math.min(maxY,runner.y));}
-      consolePet.style.left=`${runner.x}px`;consolePet.style.top=`${runner.y}px`;consolePet.style.right='auto';consolePet.style.bottom='auto';if(now>=until)pauseForStunt(now);
+      placeRunner();if(now>=until)pauseForStunt(now);
     }else if(now>=until)startRun(now);
   }requestAnimationFrame(animatePet);
 }
