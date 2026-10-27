@@ -6,7 +6,7 @@ const stunts=[
   {kind:'punch',text:'«ПОЛУЧАЙ, ЭВРИКА! ЛЕВОЙ. ПРАВОЙ. И ЕЩЁ РАЗ ЛЕВОЙ!»'},
   {kind:'vk',pose:'punch',company:true,text:'«Я ухожу в VK. Синий мне к лицу.»'},
   {kind:'goal',text:'«Пас на Костяна. Удар. Эврика в воротах.»'},
-  {kind:'yandex',pose:'rope',company:true,text:'«Я решил уйти в Яндекс. Я не боюсь дронов.»'},
+  {kind:'yandex',pose:'rope',company:true,text:'«Я решил уйти в Яндекс. Я не боюсь Дронов.»'},
   {kind:'rope',text:'«Прыгаю на скакалке, пока ищу другую компанию.»'}
 ];
 function resetKick(){clearInterval(kickTimer);kickTimer=undefined;mainPet.style.width='';mainPet.style.height='';mainPet.style.backgroundImage='';mainPet.style.backgroundSize='';mainPet.style.filter='';}
