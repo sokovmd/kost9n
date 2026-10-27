@@ -1,34 +1,34 @@
 const modal=document.querySelector('#modal'),enter=document.querySelector('#enter'),decline=document.querySelector('#decline'),speech=document.querySelector('#speech'),stunt=document.querySelector('#stunt'),consolePet=document.querySelector('.pet-console'),mainPet=document.querySelector('#mainPet'),patience=document.querySelector('#patience'),motion=document.querySelector('#motion'),bar=document.querySelector('.progress span'),title=document.title;
-let enabled=true,mode='run',until=0,kickTimer;
+let enabled=true,mode='run',until=0,kickTimer,stuntIndex=0;
 const runner={x:12,y:Math.max(70,innerHeight-170),vx:2.8,vy:-1.65};
 const stunts=[
+  {kind:'tbank',pose:'shoot',company:true,text:'«Я решил уйти в Т‑Банк. Эврика, без обид.»'},
   {kind:'punch',text:'«Секунду. Я грушу уроню — и Эврику кину.»'},
+  {kind:'vk',pose:'punch',company:true,text:'«Я ухожу в VK. Синий мне к лицу.»'},
   {kind:'goal',text:'«Пас на Костяна. Удар. Эврика в воротах.»'},
-  {kind:'rope',text:'«Прыгаю на скакалке, пока ищу другую компанию.»'},
-  {kind:'tbank',pose:'shoot',text:'«Ухожу в Т‑Банк. Эврика, без обид.»'},
-  {kind:'vk',pose:'punch',text:'«Могу уйти в VK. Синий мне к лицу.»'},
-  {kind:'yandex',pose:'rope',text:'«Или в Яндекс. Краски уже приехали.»'}
+  {kind:'yandex',pose:'rope',company:true,text:'«Решил уйти в Яндекс. Краски уже приехали.»'},
+  {kind:'rope',text:'«Прыгаю на скакалке, пока ищу другую компанию.»'}
 ];
-function resetKick(){clearInterval(kickTimer);kickTimer=undefined;mainPet.style.width='';mainPet.style.height='';mainPet.style.backgroundImage='';mainPet.style.backgroundSize='';}
+function resetKick(){clearInterval(kickTimer);kickTimer=undefined;mainPet.style.width='';mainPet.style.height='';mainPet.style.backgroundImage='';mainPet.style.backgroundSize='';mainPet.style.filter='';}
 function pose(kind='run'){
   resetKick();consolePet.className=`pet-console ${kind}`;mainPet.className='pet';mainPet.style.animation='';mainPet.style.backgroundPosition='';
   if(kind==='rope'){consolePet.className='pet-console';mainPet.style.backgroundPosition='0 -416px';mainPet.style.animation='rope .8s steps(5) infinite'}
-  if(kind==='idle')mainPet.classList.add('idle');mainPet.style.transform=runner.vx<0?'scaleX(-1) scale(1.35)':'scale(1.35)';
+  if(kind==='idle')mainPet.classList.add('idle');mainPet.style.transform=runner.vx<0?'scaleX(-1) scale(1.62)':'scale(1.62)';
 }
 function footballKick(){
-  resetKick();consolePet.className='pet-console';mainPet.className='pet';mainPet.style.width='108px';mainPet.style.height='144px';mainPet.style.backgroundImage="url('assets/kostyan-football-kick.png')";mainPet.style.backgroundSize='432px 144px';mainPet.style.backgroundPosition='0 0';mainPet.style.animation='';mainPet.style.transform='scale(1.1)';
+  resetKick();consolePet.className='pet-console';mainPet.className='pet';mainPet.style.width='108px';mainPet.style.height='144px';mainPet.style.backgroundImage="url('assets/kostyan-football-kick.png')";mainPet.style.backgroundSize='432px 144px';mainPet.style.backgroundPosition='0 0';mainPet.style.animation='';mainPet.style.transform='scale(1.25)';
   let frame=0;kickTimer=setInterval(()=>{frame=(frame+1)%4;mainPet.style.backgroundPosition=`-${frame*108}px 0`},240);
 }
 function clearStunt(){clearInterval(kickTimer);kickTimer=undefined;stunt.replaceChildren();stunt.style.cssText='display:none'}
 function hideSpeech(){speech.style.cssText='display:none'}
 function showSpeech(text){speech.textContent=text;speech.style.cssText='display:block;position:absolute;left:0;bottom:116px;width:min(220px,calc(100vw - 30px));z-index:5'}
 function boxingBag(){
-  const bag=document.createElement('i');bag.style.cssText='position:absolute;left:112px;bottom:3px;width:31px;height:57px;border:3px solid #e9e5d8;border-radius:45% 45% 48% 48%;background:#e34135;box-shadow:inset 0 0 0 7px #7e241e;transform-origin:top center';
-  stunt.style.cssText='display:block;position:absolute;inset:0;pointer-events:none';stunt.append(bag);bag.animate([{transform:'rotate(0deg)'},{transform:'rotate(17deg)'},{transform:'rotate(-13deg)'},{transform:'rotate(9deg)'},{transform:'translate(46px,74px) rotate(78deg)',opacity:0}],{duration:2200,easing:'ease-in',fill:'forwards'});
+  const rope=document.createElement('i'),bag=document.createElement('i');rope.style.cssText='position:absolute;left:161px;bottom:88px;width:3px;height:92px;background:#e9e5d8;transform-origin:bottom center';bag.style.cssText='position:absolute;left:130px;bottom:10px;width:64px;height:83px;border:4px solid #e9e5d8;border-radius:45% 45% 48% 48%;background:#e34135;box-shadow:inset 0 0 0 11px #7e241e;transform-origin:32px -88px';
+  stunt.style.cssText='display:block;position:absolute;inset:0;pointer-events:none';stunt.append(rope,bag);bag.animate([{transform:'rotate(0deg)'},{transform:'rotate(18deg)'},{transform:'rotate(-15deg)'},{transform:'rotate(12deg)'},{transform:'rotate(-9deg)'},{transform:'rotate(8deg)'}],{duration:3900,easing:'ease-in-out',fill:'forwards'});rope.animate([{transform:'rotate(0deg)'},{transform:'rotate(9deg)'},{transform:'rotate(-8deg)'},{transform:'rotate(6deg)'},{transform:'rotate(0deg)'}],{duration:3900,easing:'ease-in-out',fill:'forwards'});
 }
 function footballGoal(){
-  footballKick();const goal=document.createElement('i');goal.style.cssText='position:absolute;left:112px;bottom:15px;width:67px;height:51px;border:4px solid #e9e5d8;border-left-width:2px;background:repeating-linear-gradient(45deg,transparent 0 7px,rgba(233,229,216,.35) 8px 9px);transform-origin:bottom left';
-  stunt.style.cssText='display:block;position:absolute;inset:0;pointer-events:none';stunt.append(goal);goal.animate([{transform:'none'},{transform:'translateX(4px) rotate(4deg)'},{transform:'none'}],{duration:450,delay:1500,iterations:2});
+  footballKick();const goal=document.createElement('i'),width=Math.min(240,Math.max(170,innerWidth-150)),height=Math.round(width*.66);goal.style.cssText=`position:absolute;left:104px;bottom:8px;width:${width}px;height:${height}px;border:7px solid #e9e5d8;border-left-width:4px;background:repeating-linear-gradient(45deg,transparent 0 13px,rgba(233,229,216,.42) 14px 16px);transform-origin:bottom left`;
+  stunt.style.cssText='display:block;position:absolute;inset:0;pointer-events:none';stunt.append(goal);goal.animate([{transform:'none'},{transform:'translateX(9px) rotate(4deg)'},{transform:'translateX(-4px) rotate(-2deg)'},{transform:'none'}],{duration:900,delay:3000,iterations:2});
 }
 function shootTarget(){
   const target=document.createElement('i');target.textContent='ЭВРИКА';target.style.cssText='position:absolute;left:119px;bottom:35px;width:66px;height:66px;border:3px solid #e34135;border-radius:50%;display:grid;place-items:center;color:#e34135;background:#111;font:700 .55rem/1 IBM Plex Mono,monospace;transform:rotate(8deg)';
@@ -39,15 +39,25 @@ function brandFlash(kind){
   if(!themes)return;const flash=document.createElement('div');flash.textContent=themes.label;flash.style.cssText=`position:fixed;inset:0;z-index:18;display:grid;place-items:center;pointer-events:none;background:${themes.paint};color:${themes.ink};font:900 clamp(2rem,11vw,8rem)/.9 Impact,Arial,sans-serif;letter-spacing:.07em;text-align:center;mix-blend-mode:color;opacity:0;text-shadow:2px 2px 0 rgba(255,255,255,.28)`;
   document.body.append(flash);flash.animate([{opacity:0},{opacity:.9,offset:.12},{opacity:.72,offset:.83},{opacity:0}],{duration:2000,easing:'ease-out',fill:'forwards'}).finished.then(()=>flash.remove());
 }
+function companyLook(kind){
+  const themes={
+    tbank:{mark:'T',bg:'#ffdd2d',ink:'#111',filter:'sepia(1) saturate(7) hue-rotate(2deg) brightness(1.16)'},
+    vk:{mark:'VK',bg:'#087cf0',ink:'#fff',filter:'sepia(1) saturate(8) hue-rotate(165deg) brightness(1.02)'},
+    yandex:{mark:'Я',bg:'#fc3f1d',ink:'#fff',filter:'sepia(1) saturate(9) hue-rotate(325deg) brightness(1.05)'}
+  }[kind];
+  if(!themes)return;mainPet.style.filter=themes.filter;
+  const mark=document.createElement('i');mark.textContent=themes.mark;mark.style.cssText=`position:absolute;left:27px;bottom:33px;z-index:4;width:58px;height:58px;display:grid;place-items:center;border:4px solid ${themes.ink};border-radius:${kind==='vk'?'50%':'9px'};background:${themes.bg};color:${themes.ink};font:900 ${kind==='vk'?'1.05rem':'2rem'}/1 Arial,sans-serif;letter-spacing:-.12em;box-shadow:4px 4px 0 rgba(17,18,15,.55);transform:rotate(-8deg)`;
+  stunt.style.cssText='display:block;position:absolute;inset:0;pointer-events:none';stunt.append(mark);mark.animate([{transform:'scale(.35) rotate(-20deg)',opacity:0},{transform:'scale(1.08) rotate(6deg)',opacity:1},{transform:'scale(1) rotate(-8deg)',opacity:1}],{duration:650,fill:'forwards'});
+}
 function fitAction(){
-  runner.x=Math.min(Math.max(8,runner.x),Math.max(8,innerWidth-230));runner.y=Math.min(Math.max(65,runner.y),Math.max(65,innerHeight-180));
+  runner.x=Math.min(Math.max(8,runner.x),Math.max(8,innerWidth-360));runner.y=Math.min(Math.max(65,runner.y),Math.max(65,innerHeight-250));
   consolePet.style.left=`${runner.x}px`;consolePet.style.top=`${runner.y}px`;consolePet.style.right='auto';consolePet.style.bottom='auto';
 }
 function startRun(now=performance.now()){mode='run';until=now+1500+Math.random()*1500;hideSpeech();clearStunt();pose('run')}
 function pauseForStunt(now=performance.now(),forced){
-  mode='pause';until=now+2500;const stuntData=forced||stunts[Math.floor(Math.random()*stunts.length)];fitAction();showSpeech(stuntData.text);clearStunt();
+  mode='pause';const stuntData=forced||stunts[stuntIndex++%stunts.length];until=now+(stuntData.company?4700:4200);fitAction();showSpeech(stuntData.text);clearStunt();
   if(stuntData.kind==='goal')footballGoal();else pose(stuntData.pose||stuntData.kind);
-  if(stuntData.kind==='punch')boxingBag();if(stuntData.kind==='shoot')shootTarget();if(['tbank','vk','yandex'].includes(stuntData.kind))brandFlash(stuntData.kind);
+  if(stuntData.kind==='punch')boxingBag();if(stuntData.kind==='shoot')shootTarget();if(stuntData.company){companyLook(stuntData.kind);brandFlash(stuntData.kind)}
 }
 function animatePet(now){
   if(enabled&&modal.hidden){
