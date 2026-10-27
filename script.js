@@ -16,11 +16,11 @@ function runAcrossScreen(){
   requestAnimationFrame(runAcrossScreen);
 }
 document.body.classList.add('lock');setPose('run');requestAnimationFrame(runAcrossScreen);
-enter.onclick=()=>{modal.hidden=true;document.body.classList.remove('lock');say('«Смотри внимательно. Я хочу кинуть Эврику.»','run')};
+enter.onclick=()=>{modal.hidden=true;document.body.classList.remove('lock');say('«Смотри внимательно. Помоги мне кинуть Эврику.»','run')};
 decline.onmouseenter=()=>{decline.style.transform=`translate(${(Math.random()>.5?1:-1)*(80+Math.random()*110)}px,${(Math.random()-.5)*70}px)`;say('«НЕПРАВИЛЬНЫЙ ОТВЕТ.»','shoot')};
 decline.onclick=()=>{decline.textContent='НЕПРАВИЛЬНЫЙ ОТВЕТ';say('«Эврику я всё равно кину.»','shoot')};
 document.querySelectorAll('.project').forEach(x=>{x.onmouseenter=()=>say('«Смотри внимательно. Я должен кинуть Эврику.»','punch');x.onmouseleave=()=>say('«Проект держит нагрузку. Поможешь мне сменить Эврику?»','run')});
-document.querySelectorAll('a[href^="https://github.com"]').forEach(x=>x.onclick=()=>say('«Молодец. GitHub открыл. Теперь помогай кинуть Эврику.»','run'));
+document.querySelectorAll('a[href^="https://github.com"]').forEach(x=>x.onclick=()=>say('«Молодец. GitHub открыл. Помогай Костяну кинуть Эврику.»','run'));
 addEventListener('scroll',()=>{const max=document.documentElement.scrollHeight-innerHeight,val=Math.max(8,100-Math.round(scrollY/Math.max(1,max)*78));bar.style.width=`${Math.min(100,scrollY/max*100)}%`;patience.textContent=`${val}%`;if(val<25&&enabled)say('«Время вышло. Я КОГДА ЭВРИКУ КИНУ?»','shoot')},{passive:true});
 document.addEventListener('visibilitychange',()=>{document.title=document.hidden?'Я ВИЖУ, ЧТО ТЫ УШЁЛ':title;if(!document.hidden&&enabled)say('«Вернулся? Поможешь мне Эврику кинуть?»','run')});
 motion.onclick=()=>{enabled=!enabled;motion.textContent=enabled?'ДВИЖ ВКЛ':'ДВИЖ ВЫКЛ';if(!enabled){runner.vx=0;runner.vy=0;say('«Ладно. Эврика подождёт.»','idle')}else{runner.vx=2.8;runner.vy=-1.65;say('«Погнали. Я иду кидать Эврику.»','run')}};
